@@ -8,7 +8,7 @@ class stack {
     T data;
   };
   Node* top;
-  Node* next;
+  // Node* next;
   size_t size;
 
  public:
@@ -16,6 +16,8 @@ class stack {
   ~stack();
 };
 
+template <typename T>
 stack::stack(/* args */) {}
 
+template <typename T>
 stack::~stack() {}
