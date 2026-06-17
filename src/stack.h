@@ -15,14 +15,14 @@ class stack {
   stack() : top(nullptr), size(0) {}
   stack(std::initializer_list<T> const& items);
   stack(const stack& s);
-  stack(stack&& s) : top(s.top), size(s.size) { s = nullptr };
+  stack(stack&& s) : top(s.top), size(s.size) { s = nullptr; }
   stack& operator=(stack&& s);
   stack& operator=(const stack& s);
   ~stack();
 
-  const T& top() { return top; }
+  const T& top_stack() { return top.data; }
   bool empty() { return top == nullptr; }
-  size_type size() { return size; }
+  size_t size_stack() { return size; }
   void push(const T& value) {
     Node* tmp = new Node;
     tmp->data = value;
@@ -30,18 +30,19 @@ class stack {
     top = tmp;
     size++;
   }
-  T& pop();
+  T pop();
   void swap(stack& other);
 };
 
 template <typename T>
-T& stack<T>::pop() {
+T stack<T>::pop() {
+  if (top == nullptr) std::out_of_range("size=0");
   Node* tmp;
-  if (top.next != nullptr) tmp = top->next;
+  if (top->next != nullptr) tmp = top->next;
   T res = top->data;
   delete top;
   top = tmp;
-  return T;
+  return res;
 }
 
 template <typename T>
@@ -54,24 +55,19 @@ stack<T>& stack<T>::copy_stack(const stack& s) {
     size++;
     s.top = s.top->next;
   } while (s.top != nullptr);
-  return *this
+  return *this;
 }
 
 template <typename T>
 stack<T>::stack(std::initializer_list<T> const& items) {
-  size = 0;
-  for (items.begin; items.end; items++) {
-    Node* tmp = new Node;
-    tmp->next = top;
-    tmp->data = items;
-    top = tmp;
-    size++;
+  for (const auto& item : items) {
+    push(item);
   }
 }
 
 template <typename T>
 stack<T>::stack(const stack& s) {
-  return copy_stack(s);
+  copy_stack(s);
 }
 
 template <typename T>
@@ -96,14 +92,16 @@ stack<T>& stack<T>::operator=(const stack& s) {
 
 template <typename T>
 stack<T>::~stack() {
-  do {
-    Node* tmp = top->next;
-    delete top;
-    top = tmp;
-  } while (top != nullptr)
+  if (top != nullptr) do {
+      Node* tmp = top->next;
+      delete top;
+      top = tmp;
+    } while (top != nullptr);
 }
 
 template <typename T>
 void stack<T>::swap(stack& other) {
-  
+  stack& tmp(*this);
+  *this = other;
+  other = tmp;
 }
