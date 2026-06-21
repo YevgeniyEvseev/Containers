@@ -1,5 +1,5 @@
 #include <iostream>
-
+namespace s21 {
 template <typename T>
 class stack {
  private:
@@ -37,7 +37,7 @@ class stack {
 template <typename T>
 T stack<T>::pop() {
   if (top == nullptr) std::out_of_range("size=0");
-  Node* tmp;
+  Node* tmp = nullptr;
   if (top->next != nullptr) tmp = top->next;
   T res = top->data;
   delete top;
@@ -60,6 +60,7 @@ stack<T>& stack<T>::copy_stack(const stack& s) {
 
 template <typename T>
 stack<T>::stack(std::initializer_list<T> const& items) {
+  top = nullptr;
   for (const auto& item : items) {
     push(item);
   }
@@ -92,11 +93,11 @@ stack<T>& stack<T>::operator=(const stack& s) {
 
 template <typename T>
 stack<T>::~stack() {
-  if (top != nullptr) do {
-      Node* tmp = top->next;
-      delete top;
-      top = tmp;
-    } while (top != nullptr);
+  while (top != nullptr) {
+    Node* tmp = top->next;
+    delete top;
+    top = tmp;
+  };
 }
 
 template <typename T>
@@ -105,3 +106,5 @@ void stack<T>::swap(stack& other) {
   *this = other;
   other = tmp;
 }
+
+}  // namespace s21
