@@ -1,8 +1,8 @@
 #ifndef CONTAINERS_H
 #define CONTAINERS_H
 
-#include "stack.h"
+#include "stack/stack.h"
 
-namespace s21_containers {}
+
 
 #endif
