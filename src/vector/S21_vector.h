@@ -1,6 +1,8 @@
 #ifndef VECTOR_H
 #define VECTOR_h
 
+#define MAX_SIZE 9223372036854775807
+
 #include <initializer_list>
 #include <iostream>
 #include <utility>
@@ -36,14 +38,29 @@ class Vector {
 
   Vector(std::initializer_list<value_type> const& items);
   Vector(const Vector& v);
-  // Vector(vector&& v);
-  // operator=(Vector && v);
-  // operator=(Vector & v);
-  T operator[](size_type index) { return arr[index]; }
-  // const T operator[](size_type index) { return arr[index]; }
+  Vector(Vector&& v);
+  Vector& operator=(Vector&& v);
+  Vector& operator=(const Vector& v);
+  // Element access
+  reference operator[](size_type index) { return at(index); }
+  T operator[](size_type index) const { return arr[index]; }
+  reference at(size_type pos) { return arr[pos]; }
+  const_reference front() { return *arr; }  // access the first element
+  const_reference back() { return *(arr + m_size); }
+  T* data() { return arr; }
+
+  // Vector Iterators
+  iterator begin() { return arr; }  // returns an iterator to the beginning
+  iterator end() { return arr + m_size; }
+
+  // Capacity
 
   bool empty() { return m_size ? false : true; }
   size_type size() { return m_size; }
+  size_type max_size() { return MAX_SIZE / sizeof(T); }
+  void reserve(size_type size);
+  size_type capacity() { return m_capacity; }
+
   void push_back(const_reference value);
   // friend std::ostream& operator<<(std::ostream& os, Vector const& v);
 };
@@ -65,13 +82,45 @@ Vector<T>::Vector(const Vector& v) {
   m_capacity = v.m_capacity;
   m_size = v.m_size;
 }
+template <typename T>
+Vector<T>::Vector(Vector&& v) {
+  this = v;
+  v = nullptr;
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator=(const Vector& v) {
+  if (*v == this) return *this;
+  delete[] arr;
+  arr = new T[v.size()];
+  for (size_t i = 0; i < v.m_size(); i++) {
+    arr[i] = v.arr[i];
+  }
+  m_capacity = v.m_capacity;
+  m_size = v.m_size;
+  return *this;
+}
+
+template <typename T>
+Vector<T>& Vector<T>::operator=(Vector&& v) {
+  this = v;
+  v = nullptr;
+  return *this;
+}
 
 template <typename T>
 void Vector<T>::reserve_more_capacity() {
-  m_capacity *= 2;
-  T* tmp = arr;
-  delete[] arr;
-  arr = tmp;
+  reserve(m_capacity * 2);
+}
+
+template <typename T>
+void Vector<T>::reserve(size_type size) {
+  if (m_capacity < size) {
+    m_capacity = size;
+    T* tmp = arr;
+    delete[] arr;
+    arr = tmp;
+  }
 }
 
 template <typename T>
