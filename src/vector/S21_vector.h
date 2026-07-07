@@ -46,7 +46,7 @@ class Vector {
   T operator[](size_type index) const { return arr[index]; }
   reference at(size_type pos) { return arr[pos]; }
   const_reference front() { return *arr; }  // access the first element
-  const_reference back() { return *(arr + m_size); }
+  const_reference back() { return *(arr + m_size - 1); }
   T* data() { return arr; }
 
   // Vector Iterators
@@ -60,8 +60,15 @@ class Vector {
   size_type max_size() { return MAX_SIZE / sizeof(T); }
   void reserve(size_type size);
   size_type capacity() { return m_capacity; }
+  void shrink_to_fit();
 
+  // Vector Modifiers
+  void erase(iterator pos);
+  iterator insert(iterator pos, const_reference value);
   void push_back(const_reference value);
+  void clear();
+  void pop_back() { size--; }
+  void swap(Vector& other);
   // friend std::ostream& operator<<(std::ostream& os, Vector const& v);
 };
 
@@ -75,8 +82,8 @@ Vector<T>::Vector(std::initializer_list<value_type> const& items)
 
 template <typename T>
 Vector<T>::Vector(const Vector& v) {
-  arr = new T[v.size()];
-  for (size_t i = 0; i < v.size(); i++) {
+  arr = new T[v.m_size];
+  for (size_t i = 0; i < v.m_size; i++) {
     arr[i] = v.arr[i];
   }
   m_capacity = v.m_capacity;
@@ -84,8 +91,12 @@ Vector<T>::Vector(const Vector& v) {
 }
 template <typename T>
 Vector<T>::Vector(Vector&& v) {
-  this = v;
-  v = nullptr;
+  arr = v.arr;
+  m_size = v.m_size;
+  m_capacity = v.m_capacity;
+  v.arr = nullptr;
+  v.m_capacity = 0;
+  v.m_size = 0;
 }
 
 template <typename T>
@@ -124,6 +135,45 @@ void Vector<T>::reserve(size_type size) {
 }
 
 template <typename T>
+void Vector<T>::shrink_to_fit() {
+  if (m_capacity > m_size) {
+    reserve(m_capacity);
+    m_capacity = m_size;
+  }
+}
+
+template <typename T>
+void Vector<T>::clear() {
+  free(arr);
+  m_capacity = 0;
+  m_size = 0;
+}
+
+template <typename T>
+T* Vector<T>::insert(iterator pos, const_reference value) {
+  if (m_capacity <= m_size) {
+    reserve(m_capacity * 2);
+  }
+  iterator tmp = end()-1;
+  while (tmp != pos && tmp != begin()) {
+    tmp = tmp - 1;
+    tmp--;
+  }
+  tmp = value;
+  return tmp;
+}
+
+template <typename T>
+void Vector<T>::erase(iterator pos) {
+  iterator tmp = pos;
+  while (tmp != end()) {
+    *tmp = *(tmp + 1);
+    tmp++;
+  }
+  m_size--;
+}
+
+template <typename T>
 void Vector<T>::push_back(const_reference value) {
   if (m_size > m_capacity) {
     reserve_more_capacity();
@@ -137,6 +187,13 @@ std::ostream& operator<<(std::ostream& os, Vector<T>& v) {
     os << v[i] << ' ';
   }
   return os;
+}
+
+template <typename T>
+void Vector<T>::swap(Vector& other) {
+  Vector tmp = other;
+  other = *this;
+  *this = tmp;
 }
 
 }  // namespace s21
