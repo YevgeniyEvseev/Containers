@@ -42,9 +42,20 @@ class Vector {
   Vector& operator=(Vector&& v);
   Vector& operator=(const Vector& v);
   // Element access
-  reference operator[](size_type index) { return at(index); }
-  T operator[](size_type index) const { return arr[index]; }
-  reference at(size_type pos) { return arr[pos]; }
+  reference operator[](size_type index) {
+    if (index >= m_size) throw std::out_of_range("Failure\n");
+    return at(index);
+  }
+  T operator[](size_type index) const {
+    if (index >= m_size) throw std::out_of_range("Failure\n");
+    return arr[index];
+  }
+  reference at(size_type pos) {
+    if (pos >= m_size) {
+      throw std::out_of_range("Failure\n");
+    }
+    return arr[pos];
+  }
   const_reference front() { return *arr; }  // access the first element
   const_reference back() { return *(arr + m_size - 1); }
   T* data() { return arr; }
@@ -67,9 +78,11 @@ class Vector {
   iterator insert(iterator pos, const_reference value);
   void push_back(const_reference value);
   void clear();
-  void pop_back() { size--; }
+  void pop_back() { m_size--; }
   void swap(Vector& other);
   // friend std::ostream& operator<<(std::ostream& os, Vector const& v);
+  iterator insert_many(const_iterator pos, Args&&... args);
+  
 };
 
 template <typename T>
@@ -101,10 +114,10 @@ Vector<T>::Vector(Vector&& v) {
 
 template <typename T>
 Vector<T>& Vector<T>::operator=(const Vector& v) {
-  if (*v == this) return *this;
+  if (&v == this) return *this;
   delete[] arr;
-  arr = new T[v.size()];
-  for (size_t i = 0; i < v.m_size(); i++) {
+  arr = new T[v.m_size];
+  for (size_t i = 0; i < v.m_size; i++) {
     arr[i] = v.arr[i];
   }
   m_capacity = v.m_capacity;
@@ -114,8 +127,12 @@ Vector<T>& Vector<T>::operator=(const Vector& v) {
 
 template <typename T>
 Vector<T>& Vector<T>::operator=(Vector&& v) {
-  this = v;
-  v = nullptr;
+  arr = v.arr;
+  m_size = v.m_size;
+  m_capacity = v.m_capacity;
+  v.arr = nullptr;
+  v.m_capacity = 0;
+  v.m_size = 0;
   return *this;
 }
 
@@ -126,9 +143,12 @@ void Vector<T>::reserve_more_capacity() {
 
 template <typename T>
 void Vector<T>::reserve(size_type size) {
-  if (m_capacity < size) {
+  if (m_capacity <= size) {
     m_capacity = size;
-    T* tmp = arr;
+    T* tmp = new T[m_capacity];
+    for (size_t i = 0; i < m_size; i++) {
+      tmp[i] = arr[i];
+    }
     delete[] arr;
     arr = tmp;
   }
@@ -150,17 +170,19 @@ void Vector<T>::clear() {
 }
 
 template <typename T>
-T* Vector<T>::insert(iterator pos, const_reference value) {
+typename Vector<T>::iterator Vector<T>::insert(iterator pos,
+                                               const_reference value) {
+  m_size++;
   if (m_capacity <= m_size) {
     reserve(m_capacity * 2);
   }
-  iterator tmp = end()-1;
-  while (tmp != pos && tmp != begin()) {
-    tmp = tmp - 1;
-    tmp--;
+  iterator tmp;
+  for (tmp = end(); tmp != pos; --tmp) {
+    if (tmp == begin()) break;
+    *(tmp + 1) = *(tmp);
   }
-  tmp = value;
-  return tmp;
+  *(tmp + 2) = value;
+  return tmp + 2;
 }
 
 template <typename T>
@@ -175,7 +197,7 @@ void Vector<T>::erase(iterator pos) {
 
 template <typename T>
 void Vector<T>::push_back(const_reference value) {
-  if (m_size > m_capacity) {
+  if (m_size >= m_capacity) {
     reserve_more_capacity();
   }
   arr[m_size++] = value;
