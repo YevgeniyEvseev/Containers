@@ -299,9 +299,8 @@ TEST(VectorTest, MoveAssignmentOperator) {
   EXPECT_EQ(source.size(), 0);
 }
 
-#if 0
 TEST(VectorInsertManyTest, BasicInsertMany1) {
-  s21::vector<int> vec = {1, 2, 5};
+  s21::Vector<int> vec = {1, 2, 5};
 
   auto it = vec.insert_many(vec.begin() + 2, 3, 4);
 
@@ -313,7 +312,7 @@ TEST(VectorInsertManyTest, BasicInsertMany1) {
   EXPECT_EQ(vec[4], 5);
   EXPECT_EQ(*it, 3);
 }
-
+#if 0
 TEST(VectorInsertManyTest, InsertMany2) {
   s21::vector<int> vec = {4, 5, 6};
 

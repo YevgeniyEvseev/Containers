@@ -81,8 +81,37 @@ class Vector {
   void pop_back() { m_size--; }
   void swap(Vector& other);
   // friend std::ostream& operator<<(std::ostream& os, Vector const& v);
-  iterator insert_many(const_iterator pos, Args&&... args);
-  
+
+  template <typename... Args>
+  iterator insert_many(const_iterator pos, Args&&... args) {
+    if (empty()) {
+      Vector tmp{args...};
+      *this = (tmp);
+      // for(int i=0; i<tmp.m_size; i++) arr=tmp.arr;
+      //  m_capacity=tmp.m_capacity;
+
+      return arr;
+    }
+    value_type tmps[] = {args...};
+    size_type count = sizeof(arr) / sizeof(value_type);
+    std::cout << "count=" << count << ' ' << tmps[0] << std::endl;
+
+    m_size += count;
+    if (m_capacity <= m_size) {
+      reserve(m_capacity * 2);
+    }
+    iterator tmp;
+    for (tmp = end(); tmp != pos; --tmp) {
+      if (tmp == begin()) break;
+      *(tmp) = *(tmp - count);
+      std::cout << *this << std::endl;
+    }
+
+    for (int i = 0; i < count; i++) *(tmp + i + 2) = tmps[i];
+    return tmp + 2;
+
+    return tmp;
+  }
 };
 
 template <typename T>
