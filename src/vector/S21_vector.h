@@ -87,30 +87,24 @@ class Vector {
     if (empty()) {
       Vector tmp{args...};
       *this = (tmp);
-      // for(int i=0; i<tmp.m_size; i++) arr=tmp.arr;
-      //  m_capacity=tmp.m_capacity;
-
       return arr;
     }
     value_type tmps[] = {args...};
-    size_type count = sizeof(arr) / sizeof(value_type);
-    std::cout << "count=" << count << ' ' << tmps[0] << std::endl;
-
-    m_size += count;
-    if (m_capacity <= m_size) {
+    size_type count = sizeof(tmps) / sizeof(value_type);
+    int pos_i = pos - begin();
+    int count_end_pos = end() - pos;
+    while (m_capacity <= m_size + count) {
       reserve(m_capacity * 2);
     }
-    iterator tmp;
-    for (tmp = end(); tmp != pos; --tmp) {
-      if (tmp == begin()) break;
-      *(tmp) = *(tmp - count);
-      std::cout << *this << std::endl;
+
+    for (int i = count_end_pos - 1; i >= 0; --i) {
+      arr[pos_i + count + i] = arr[pos_i + i];
     }
+    m_size += count;
 
-    for (int i = 0; i < count; i++) *(tmp + i + 2) = tmps[i];
-    return tmp + 2;
-
-    return tmp;
+    for (int i = 0; i < count; i++) arr[pos_i + i] = tmps[i];
+    std::cout << *this << std::endl;
+    return arr + pos_i;
   }
 };
 

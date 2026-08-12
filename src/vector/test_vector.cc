@@ -312,9 +312,9 @@ TEST(VectorInsertManyTest, BasicInsertMany1) {
   EXPECT_EQ(vec[4], 5);
   EXPECT_EQ(*it, 3);
 }
-#if 0
+
 TEST(VectorInsertManyTest, InsertMany2) {
-  s21::vector<int> vec = {4, 5, 6};
+  s21::Vector<int> vec = {4, 5, 6};
 
   auto it = vec.insert_many(vec.begin(), 1, 2, 3);
 
@@ -329,7 +329,7 @@ TEST(VectorInsertManyTest, InsertMany2) {
 }
 
 TEST(VectorInsertManyTest, InsertMany3) {
-  s21::vector<int> vec = {1, 2, 3};
+  s21::Vector<int> vec = {1, 2, 3};
 
   auto it = vec.insert_many(vec.end(), 4, 5, 6);
 
@@ -344,7 +344,7 @@ TEST(VectorInsertManyTest, InsertMany3) {
 }
 
 TEST(VectorInsertManyTest, InsertMany4) {
-  s21::vector<int> vec = {1, 2, 6, 7};
+  s21::Vector<int> vec = {1, 2, 6, 7};
 
   auto it = vec.insert_many(vec.begin() + 2, 3, 4, 5);
 
@@ -360,7 +360,7 @@ TEST(VectorInsertManyTest, InsertMany4) {
 }
 
 TEST(VectorInsertManyTest, InsertMany5) {
-  s21::vector<int> vec = {1, 3, 4};
+  s21::Vector<int> vec = {1, 3, 4};
 
   auto it = vec.insert_many(vec.begin() + 1, 2);
 
@@ -373,7 +373,7 @@ TEST(VectorInsertManyTest, InsertMany5) {
 }
 
 TEST(VectorInsertManyTest, InsertMany6) {
-  s21::vector<int> vec;
+  s21::Vector<int> vec;
 
   auto it = vec.insert_many(vec.begin(), 1, 2, 3);
 
@@ -385,7 +385,7 @@ TEST(VectorInsertManyTest, InsertMany6) {
 }
 
 TEST(VectorInsertManyTest, InsertMany7) {
-  s21::vector<int> vec = {1, 2, 3};
+  s21::Vector<int> vec = {1, 2, 3};
 
   auto it = vec.insert_many(vec.begin() + 1);
 
@@ -397,7 +397,7 @@ TEST(VectorInsertManyTest, InsertMany7) {
 }
 
 TEST(VectorInsertManyTest, InsertMany8) {
-  s21::vector<std::string> vec = {"hello", "world"};
+  s21::Vector<std::string> vec = {"hello", "world"};
 
   auto it = vec.insert_many(vec.begin() + 1, "beautiful", "test");
 
@@ -410,7 +410,7 @@ TEST(VectorInsertManyTest, InsertMany8) {
 }
 
 TEST(VectorInsertManyTest, InsertMany9) {
-  s21::vector<int> vec = {1, 4, 5};
+  s21::Vector<int> vec = {1, 4, 5};
   auto it = vec.insert_many(vec.begin() + 1, 2, 3);
   EXPECT_EQ(*it, 2);
   ++it;
@@ -420,7 +420,7 @@ TEST(VectorInsertManyTest, InsertMany9) {
 }
 
 TEST(VectorInsertManyTest, InsertMany10) {
-  s21::vector<int> vec = {1, 100};
+  s21::Vector<int> vec = {1, 100};
 
   auto it = vec.insert_many(vec.begin() + 1, 2, 3, 4, 5, 6, 7, 8, 9);
 
@@ -434,7 +434,7 @@ TEST(VectorInsertManyTest, InsertMany10) {
 }
 
 TEST(VectorInsertManyTest, InsertMany11) {
-  s21::vector<int> vec = {1, 5};
+  s21::Vector<int> vec = {1, 5};
 
   vec.insert_many(vec.begin() + 1, 2, 3, 4);
 
@@ -445,7 +445,7 @@ TEST(VectorInsertManyTest, InsertMany11) {
 }
 
 TEST(VectorInsertManyTest, InsertMany12) {
-  s21::vector<int> vec;
+  s21::Vector<int> vec;
   vec = {1, 2, 3};
   vec.insert_many(vec.begin() + 1, 10, 20, 30, 40);
 
@@ -459,7 +459,7 @@ TEST(VectorInsertManyTest, InsertMany12) {
   EXPECT_EQ(vec[5], 2);
   EXPECT_EQ(vec[6], 3);
 }
-
+#if 0
 TEST(VectorInsertManyBackTest, InsertManyBack1) {
   s21::Vector<int> vec;
   vec = {1, 2, 3};
