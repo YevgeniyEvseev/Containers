@@ -106,6 +106,10 @@ class Vector {
     std::cout << *this << std::endl;
     return arr + pos_i;
   }
+  template <typename... Args>
+  iterator insert_many_back(Args&&... args) {
+    return insert_many(end(), args...);
+  }
 };
 
 template <typename T>

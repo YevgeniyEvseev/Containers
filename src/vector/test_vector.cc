@@ -459,7 +459,19 @@ TEST(VectorInsertManyTest, InsertMany12) {
   EXPECT_EQ(vec[5], 2);
   EXPECT_EQ(vec[6], 3);
 }
-#if 0
+
+TEST(VectorInsertManyTest, InsertMany13) {
+  s21::Vector<int> vec;
+  vec.insert_many(vec.begin(), 10, 20, 30, 40);
+
+  EXPECT_EQ(vec.size(), 4);
+  EXPECT_GE(vec.capacity(), 4);
+  EXPECT_EQ(vec[0], 10);
+  EXPECT_EQ(vec[1], 20);
+  EXPECT_EQ(vec[2], 30);
+  EXPECT_EQ(vec[3], 40);
+}
+
 TEST(VectorInsertManyBackTest, InsertManyBack1) {
   s21::Vector<int> vec;
   vec = {1, 2, 3};
@@ -487,7 +499,7 @@ TEST(VectorInsertManyBackTest, InsertManyBack2) {
   EXPECT_EQ(vec[2], 30);
   EXPECT_EQ(vec[3], 40);
 }
-#endif
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
