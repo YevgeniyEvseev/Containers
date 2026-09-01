@@ -1,13 +1,27 @@
 namespace S21 {
+
+template <typename T>
+struct Node {
+  T data;
+  Node* Next;
+  Node* Prev;
+};
+
+template <typename T>
+class ListIterator {
+ private:
+  Node<T>* point;
+
+ public:
+  Node<T>* operator++() { return point->Next; }
+  Node<T>* operator--() { return point->Prev; }
+  T& operator*() { return point->data; }
+  bool operator==(ListIterator& other) { return (point == other.point); }
+  bool operator!=(ListIterator& other) { return !(point == other.point); }
+};
+
 template <typename T>
 class list {
- public:
-  struct Node {
-    T data;
-    Node* Next;
-    Node* Prev;
-  };
-
  private:
   Node* front;
   Node* rear;
@@ -16,11 +30,11 @@ class list {
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
-  using iterator = T*;
-  using const_iterator = const T*;
   using size_type = size_t;
+  using
 
-  list() : front(nullptr), rear(nullptr) {}
+      list()
+      : front(nullptr), rear(nullptr) {}
   list(size_type n) {
     if (n > 0) {
       rear = new Node;
@@ -57,7 +71,8 @@ class list {
 template <typename T>
 std::ostream& operator<<(std::ostream& os, list<T>& lst) {
   while (front->Next != nullptr) {
-    Node* tmp = lst->rear os <<
+    Node* tmp = lst->rear;
+    os <<
   }
 }
 }  // namespace S21
