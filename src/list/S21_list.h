@@ -13,6 +13,7 @@ class ListIterator {
   Node<T>* point;
 
  public:
+  ListIterator(Node<T>* nd) : point(nd) {}
   Node<T>* operator++() { return point->Next; }
   Node<T>* operator--() { return point->Prev; }
   T& operator*() { return point->data; }
@@ -23,26 +24,25 @@ class ListIterator {
 template <typename T>
 class list {
  private:
-  Node* front;
-  Node* rear;
+  Node<T>* front;
+  Node<T>* rear;
 
  public:
   using value_type = T;
   using reference = T&;
   using const_reference = const T&;
   using size_type = size_t;
-  using
+  typedef ListIterator<T> iterator;
 
-      list()
-      : front(nullptr), rear(nullptr) {}
+  list() : front(nullptr), rear(nullptr) {}
   list(size_type n) {
     if (n > 0) {
-      rear = new Node;
+      rear = new Node<T>;
       rear->Next = rear->Prev = nullptr;
       front = rear;
       for (int i = 1; i < n; i++) {
-        Node* tmp = front;
-        front = new Node;
+        Node<T>* tmp = front;
+        front = new Node<T>;
         front->Next = nullptr;
         front->Prev = tmp;
         tmp->Next = front;
@@ -53,26 +53,32 @@ class list {
       : front(nullptr), rear(nullptr) {
     for (auto item : items) {
       if (rear == nullptr) {
-        rear = new Node;
+        rear = new Node<T>;
         rear->Next = rear->Prev = nullptr;
         front = rear;
         rear->data = item;
+        front->data = item;
       } else {
-        Node* tmp = front;
-        front = new Node;
-        front->Next = nullptr;
-        front->Prev = tmp;
-        tmp->Next = front;
-        rear->data = item;
+        Node<T>* tmp = new Node<T>;
+        tmp->Next = nullptr;
+        tmp->Prev = front;
+        tmp->data = item;
+        front->Next = tmp;
+        front = tmp;
       }
     }
   }
+  iterator begin() { return ListIterator(rear); }
+  iterator end() { return ListIterator(front); }
 };
+
 template <typename T>
-std::ostream& operator<<(std::ostream& os, list<T>& lst) {
-  while (front->Next != nullptr) {
-    Node* tmp = lst->rear;
-    os <<
+std::ostream& operator<<(std::ostream& os, list<T> lst) {
+  ListIterator<T> end_iter = lst.end();
+  for (ListIterator<T> i = lst.begin(); i != end_iter; ++i) {
+    os << *i << ' ';
   }
+  os << std::endl;
+  return os;
 }
 }  // namespace S21
