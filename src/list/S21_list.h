@@ -22,6 +22,15 @@ class ListIterator {
   T& operator*() { return point->data; }
   bool operator==(ListIterator& other) { return (point == other.point); }
   bool operator!=(ListIterator& other) { return point != other.point; }
+  bool operator>(const ListIterator& other) {
+    return point->data > other.point->data;
+  }
+  ListIterator<T> operator+(int n) {
+    for (int i = 0; i < n; i++) {
+      point = point->Next;
+    }
+    return *this;
+  }
   T& getdata() { return point->data; }
   Node<T>* get_point() { return point; }
 };
@@ -33,6 +42,7 @@ class ListConstIterator {
 
  public:
   ListConstIterator(Node<T>* nd) : point(nd) {}
+  ListConstIterator(ListIterator<T> list_iter) : point(list_iter.get_point()) {}
   Node<T>* operator++() const { return point = point->Next; }
   Node<T>* operator++(int) const { return point = point->Next; }
   Node<T>* operator--() const { return point = point->Prev; }
@@ -43,6 +53,15 @@ class ListConstIterator {
   bool operator!=(const ListConstIterator& other) const {
     return !(point == other.point);
   }
+  bool operator>(const ListConstIterator& other) const {
+    return point->data > other.point->data;
+  }
+  ListConstIterator<T> operator+(int n) {
+    for (int i = 0; i < n; i++) point++;
+    return *this;
+  }
+  T& getdata() { return point->data; }
+  Node<T>* get_point() const { return const_cast<Node<T>*>(point); }
 };
 
 template <typename T>
@@ -70,9 +89,26 @@ class list {
 
   void create_end_node(size_t n) {
     Node<T>* end_l = new Node<T>;
+    end_l->Next = nullptr;
     front_n->Next = end_l;
     end_l->Prev = front_n;
     end_l->data = n++;
+  }
+
+  void delete_node(Node<T>* item) {
+    if (item == front_n) {
+      front_n = item->Prev;
+    }
+    if (item == rear) {
+      rear = item->Next;
+      item->Next->Prev = nullptr;
+    } else if (item->Next == nullptr) {
+      std::logic_error("delete of end node is not impossible");
+    } else {
+      item->Next->Prev = item->Prev;
+      item->Prev->Next = item->Next;
+    }
+    delete item;
   }
 
  public:
@@ -110,13 +146,14 @@ class list {
 
   list(const list& l) : front_n(nullptr), rear(nullptr) {
     ListIterator<T> i = l.rear;
-    ListIterator<T> end_i = nullptr;
+    ListIterator<T> end_i = l.front_n->Next;
     size_t count = 0;
     for (; i != end_i; i++) {
       create_node(i.getdata());
       count++;
     }
-    create_end_node(count);
+    // front_n->Next->data = count;
+    //  create_end_node(count);
   }
 
   list(list&& l) {
@@ -140,9 +177,12 @@ class list {
   const_reference back() { return rear->data; }
 
   iterator begin() { return ListIterator(rear); }
-  iterator end() { return front_n->Next; }
+  iterator end() {
+    if (front_n == nullptr) return nullptr;
+    return front_n->Next;
+  }
 
-  bool empty() { return (rear == nullptr && front = nullptr); }
+  bool empty() { return (rear == nullptr && front_n == nullptr); }
 
   size_type size() {
     size_type i = 0;
@@ -180,9 +220,9 @@ class list {
     } else {
       rear = tmp;
     }
-    if (pos_node->Next != nullptr) {
-      pos_node->Next->Prev = tmp;
-    } else {
+    pos_node->Prev = tmp;
+    if (pos_node->Next == nullptr) {
+      pos_node->data++;
       front_n = tmp;
     }
     return tmp;
@@ -196,10 +236,80 @@ class list {
   }
 
   void push_back(const_reference value) { insert(end(), value); }
+  void pop_back() { delete_node(front_n); }
+  void push_front(const_reference value) { insert(begin(), value); }
+  void pop_front() { delete_node(rear); }
+  void swap(list& other) {
+    Node<T>* tmp = other.front_n;
+    other.front_n = front_n;
+    front_n = tmp;
+    tmp = other.rear;
+    other.rear = rear;
+    rear = tmp;
+  }
+  void merge(list& other) {
+    S21::list<int> res;
+    int end_loop = 0;
+    ListIterator<T> tmp = other.begin();
+    ListIterator<T> end_iter = end();
+    for (ListIterator<T> i = begin(); i != end_iter; i++) {
+      while (i > tmp) {
+        insert(i, *tmp);
+        tmp++;
+      }
+    }
+    end_iter = other.end();
+    while (tmp != end_iter) {
+      push_back(*tmp);
+      tmp++;
+    }
+  }
+
+  void splice(ListConstIterator<T> pos, list& other) {
+    Node<T>* begin_loop = pos.get_point();
+    // Node<T>* last_node = begin_loop;
+    for (Node<T>* i = other.rear; i != other.front_n->Next; i = i->Next) {
+      insert(begin_loop, i->data);
+    }
+  }
+
+  void swap_node(Node<T>* a, Node<T>* b) {
+    T tmp = a->data;
+    a->data = b->data;
+    b->data = tmp;
+  }
+
+  void reverse() {
+    if (rear == nullptr) return;
+    Node<T>* left = rear;
+    Node<T>* right = front_n;
+    while (left != right) {
+      swap_node(left, right);
+      left = left->Next;
+      if (left == right) break;
+      right = right->Prev;
+    }
+  }
+  void unique() {
+    T tmp = rear->data;
+    for (Node<T>* i = rear->Next; i != front_n->Next; i = i->Next) {
+      if (i->data == tmp) {
+        Node<T>* noda_tmp = i->Prev;
+        delete_node(i);
+        i = noda_tmp;
+      } else {
+        tmp = i->data;
+      }
+    }
+  }
+  void sort(){
+    
+  }
 };
 
 template <typename T>
 std::ostream& operator<<(std::ostream& os, list<T>& lst) {
+  if (lst.empty()) return os;
   ListIterator<T> tmp = lst.begin();
   ListIterator<T> end_i = lst.end();
   for (tmp = lst.begin(); tmp != end_i; tmp++) {
