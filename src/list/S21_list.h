@@ -303,7 +303,7 @@ class list {
     }
   }
   void sort(){
-    
+        
   }
 };
 
