@@ -7,6 +7,13 @@ struct Node {
   T data;
   Node* Next;
   Node* Prev;
+  Node<T>* operator+(int n) {
+    Node<T>* res = this;
+    for (int i = 0; i < n; i++) {
+      res = res->Next;
+    }
+    return res;
+  }
 };
 
 template <typename T>
@@ -110,8 +117,6 @@ class list {
     }
     delete item;
   }
-
-  
 
  public:
   using value_type = T;
@@ -275,10 +280,39 @@ class list {
     }
   }
 
-  void swap_node(Node<T>* a, Node<T>* b) {
+  void swap_node_8(Node<T>* a, Node<T>* b) {
     T tmp = a->data;
     a->data = b->data;
     b->data = tmp;
+  }
+
+  void swap_node_16(Node<T>* a, Node<T>* b) {
+    if (a == front_n || b == rear) {
+      Node<T>* tmp_n = a;
+      a = b;
+      b = tmp_n;
+    }
+    if (a == rear) {
+      rear = b;
+    } else {
+      a->Prev->Next = b;
+    }
+    if (b == front_n) {
+      front_n = a;
+    } else {
+      b->Next->Prev = a;
+    }
+
+    b->Prev->Next = a;
+    a->Next->Prev = b;
+
+    Node<T>* tmp = a->Next;
+    a->Next = b->Next;
+    b->Next = tmp;
+
+    tmp = a->Prev;
+    a->Prev = b->Prev;
+    b->Prev = tmp;
   }
 
   void reverse() {
@@ -286,7 +320,7 @@ class list {
     Node<T>* left = rear;
     Node<T>* right = front_n;
     while (left != right) {
-      swap_node(left, right);
+      swap_node_8(left, right);
       left = left->Next;
       if (left == right) break;
       right = right->Prev;
@@ -304,8 +338,66 @@ class list {
       }
     }
   }
-  void sort(){
-        
+
+  void merge_sort(Node<T>* arr[], int begin, int average, int end) {
+    int l_left = average - begin;
+    int l_right = end + 1 - l_left - begin;
+    if (l_right <= 0 || l_left <= 0) return;
+    T left[l_left] = {0};
+    T right[l_right] = {0};
+    int index = begin;
+    for (int i = 0; i < l_left; i++) {
+      left[i] = arr[index++]->data;
+    }
+    for (int i = 0; i < l_right; i++) {
+      right[i] = arr[index++]->data;
+    }
+    int i_left = 0;
+    int i_right = 0;
+    // index = begin;
+    while (i_left < l_left && i_right < l_right) {
+      if (left[i_left] <= right[i_right])
+        arr[begin++]->data = left[i_left++];
+      else
+        arr[begin++]->data = right[i_right++];
+    }
+    while (i_left < l_left) {
+      arr[begin++]->data = left[i_left++];
+    }
+    while (i_right < l_right) {
+      arr[begin++]->data = right[i_right++];
+    }
+  }
+
+  void merge(Node<T>* arr[], int lenght) {
+    int i = 0;
+    int index = 0;
+    for (i = 2; i < lenght; i *= 2) {
+      index = 0;
+      int l = i / 2;
+      while (index < lenght) {
+        int index_end = index + i - 1;
+        if (index_end > lenght) {
+          index_end = lenght - 1;
+        }
+        merge_sort(arr, index, index + l, index_end);
+        index += i;
+      }
+      if (index - lenght != i)
+        merge_sort(arr, index - i, index - i + l, lenght - 1);
+    }
+    if (index - lenght != i) merge_sort(arr, 0, i / 2, lenght - 1);
+  }
+
+  void sort() {
+    Node<T>* tmp = rear;
+    int length = front_n->Next->data;
+    Node<T>* table_Node[length];
+    for (int i = 0; i < length; i++) {
+      table_Node[i] = tmp;
+      tmp = tmp->Next;
+    }
+    merge(table_Node, length);
   }
 };
 

@@ -1,14 +1,21 @@
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 void merge_sort(int* arr, int begin, int average, int end);
 void merge(int* arr, int lenght);
 
 int main() {
-  int arr[1] = {6};
+  const int NUM = 400000;
+  srand(time(0));
+  int arr[NUM] = {0};
+  for (int i = 0; i < NUM; i++) {
+    arr[i] = rand();
+  }
   // merge_sort(arr, 6, 8);
-  merge(arr, 1);
-  for (auto i : arr) std::cout << i << ' ';
-  std::cout << std::endl;
+  merge(arr, NUM);
+  // for (auto i : arr) std::cout << i << ' ';
+  // std::cout << std::endl;
 }
 
 void merge_sort(int* arr, int begin, int average, int end) {
