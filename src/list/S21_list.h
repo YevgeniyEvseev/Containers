@@ -27,9 +27,13 @@ class ListIterator {
   Node<T>* operator++(int) { return point = point->Next; }
   Node<T>* operator--() { return point = point->Prev; }
   T& operator*() { return point->data; }
-  bool operator==(ListIterator& other) { return (point == other.point); }
-  bool operator!=(ListIterator& other) { return point != other.point; }
-  bool operator>(const ListIterator& other) {
+  bool operator==(const ListIterator& other) const {
+    return (point == other.point);
+  }
+  bool operator!=(const ListIterator& other) const {
+    return point != other.point;
+  }
+  bool operator>(const ListIterator& other) const {
     return point->data > other.point->data;
   }
   ListIterator<T> operator+(int n) {
@@ -54,10 +58,10 @@ class ListConstIterator {
   Node<T>* operator++(int) const { return point = point->Next; }
   Node<T>* operator--() const { return point = point->Prev; }
   T& operator*() { return point->data; }
-  bool operator==(const ListConstIterator& other) const {
+  bool operator==(const ListConstIterator other) const {
     return (point == other.point);
   }
-  bool operator!=(const ListConstIterator& other) const {
+  bool operator!=(const ListConstIterator other) const {
     return !(point == other.point);
   }
   bool operator>(const ListConstIterator& other) const {
@@ -124,6 +128,7 @@ class list {
   using const_reference = const T&;
   using size_type = size_t;
   typedef ListIterator<T> iterator;
+  // typedef ListConstIterator<T> const_iterator;
 
   list() : front_n(nullptr), rear(nullptr) {}
   list(size_type n) {
@@ -160,7 +165,7 @@ class list {
       count++;
     }
     // front_n->Next->data = count;
-    //  create_end_node(count);
+    create_end_node(count);
   }
 
   list(list&& l) {
@@ -192,13 +197,8 @@ class list {
   bool empty() { return (rear == nullptr && front_n == nullptr); }
 
   size_type size() {
-    size_type i = 0;
-    Node<T>* tmp = rear;
-    while (tmp != nullptr) {
-      i++;
-      tmp = tmp->Next;
-    }
-    return i;
+    if (rear == nullptr) return 0;
+    return end().getdata();
   }
 
   size_type max_size() { return MAX_SIZE / sizeof(T); }
@@ -237,8 +237,15 @@ class list {
 
   void erase(iterator pos) {
     Node<T>* tmp = pos.get_point();
-    tmp->Next->Prev = tmp->Prev;
-    tmp->Prev->Next = tmp->Next;
+    if (tmp == front_n && tmp != rear) front_n = tmp->Prev;
+    if (tmp == rear) {
+      rear = tmp->Next;
+      rear->Prev = nullptr;
+    } else {
+      tmp->Prev->Next = tmp->Next;
+      tmp->Next->Prev = tmp->Prev;
+    }
+    end().getdata()--;
     delete tmp;
   }
 
