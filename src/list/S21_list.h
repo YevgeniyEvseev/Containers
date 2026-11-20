@@ -231,6 +231,8 @@ class list {
     if (pos_node->Next == nullptr) {
       pos_node->data++;
       front_n = tmp;
+    } else {
+      front_n->Next->data++;
     }
     return tmp;
   }
@@ -247,6 +249,48 @@ class list {
     }
     end().getdata()--;
     delete tmp;
+  }
+
+  template <typename... Args>
+  iterator insert_many(iterator pos, Args&&... args) {
+    iterator it = pos;
+    iterator res = pos;
+    value_type arr[] = {args...};
+    size_t count = sizeof(arr) / sizeof(value_type);
+    for (int i = 0; i < count; i++) {
+      it = insert(it, arr[i]);
+      if (i == 0) res = it;
+      it++;
+    }
+    return res;
+  }
+
+  template <typename... Args>
+  void insert_many_back(Args&&... args) {
+    value_type arr[] = {args...};
+    size_t count = sizeof(arr) / sizeof(value_type);
+    int i = 0;
+    if (empty()) {
+      create_node(arr[i++]);
+      create_end_node(1);
+    }
+    for (; i < count; i++) {
+      push_back(arr[i]);
+    }
+  }
+
+  template <typename... Args>
+  void insert_many_front(Args&&... args) {
+    value_type arr[] = {args...};
+    size_t count = sizeof(arr) / sizeof(value_type);
+    int i = 0;
+    if (empty()) {
+      create_node(arr[i++]);
+      create_end_node(1);
+    }
+    for (; i < count; i++) {
+      push_front(arr[i]);
+    }
   }
 
   void push_back(const_reference value) { insert(end(), value); }

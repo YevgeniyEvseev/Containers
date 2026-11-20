@@ -198,7 +198,6 @@ TEST(ListTest, EraseList3) {
   }
   EXPECT_EQ(std_it, std_lst.end());
   EXPECT_EQ(my_it, my_lst.end());
-  
 }
 
 TEST(ListTest, InsertList) {
@@ -268,7 +267,7 @@ TEST(ListTest, PushfrontList) {
   EXPECT_EQ(std_it, std_lst.end());
   EXPECT_EQ(my_it, my_lst.end());
 }
-/*
+
 TEST(S21ListInsertManyTest, InsertMany1) {
   S21::list<int> my_list = {1, 2, 3, 4, 5};
   auto pos = my_list.begin();
@@ -374,7 +373,7 @@ TEST(S21ListInsertManyFrontTest, InsertMany7) {
   S21::list<int> my_list;
   my_list.insert_many_front(3, 2, 1);
 
-  S21::list<int> expected = {3, 2, 1};
+  S21::list<int> expected = {1, 2, 3};
   EXPECT_EQ(my_list.size(), expected.size());
 
   auto it1 = my_list.begin();
@@ -388,7 +387,7 @@ TEST(S21ListInsertManyFrontTest, InsertMany7) {
 
 TEST(S21ListInsertManyFrontTest, InsertMany8) {
   S21::list<int> my_list = {4, 5, 6};
-  my_list.insert_many_front(1, 2, 3);
+  my_list.insert_many_front(3, 2, 1);
 
   S21::list<int> expected = {1, 2, 3, 4, 5, 6};
   EXPECT_EQ(my_list.size(), expected.size());
@@ -417,7 +416,6 @@ TEST(S21ListInsertManyFrontTest, InsertMany9) {
     ++it2;
   }
 }
-  */
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
